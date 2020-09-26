@@ -33,7 +33,7 @@ const Apunte = () => {
                    setApunte( apunte.data() );
                    setQuery(false);
                 } else {
-                    setError( true );
+                    setError(true);
                     setQuery(false);
                 }
             }
@@ -43,7 +43,7 @@ const Apunte = () => {
     
     if(Object.keys(apunte).length === 0 && !error) return 'Cargando...';
 
-    const { author, comments, date, fileDescription, fileName, fileUrl, signature, votes, whoVoted } = apunte;
+    const { author, comments, date, fileDescription, fileName, fileUrl, urlYoutube,  signature, votes, whoVoted } = apunte;
 
     const voteApunte = () => {
         if(!user) {
@@ -145,7 +145,7 @@ const Apunte = () => {
     return (
         <>
             <Layout>
-                <div className="column col-8 col-mx-auto">
+                <div className="column col-8 col-md-10 col-mx-auto">
                     
                     <div className="columns">
 
@@ -154,9 +154,23 @@ const Apunte = () => {
                             <p className="text-gray">{signature}</p>
                         </div>
 
-                        <div className="column col-8 col-mx-auto">
+                        <div className="column col-10 col-mx-auto">
 
-                            <img src={fileUrl} className="img-responsive" alt={fileName}></img>
+                            {
+                                fileUrl.includes(".pdf") ? (
+                                    <iframe src={fileUrl} width="100%" height="700px"></iframe>
+                                ) : (
+                                    <img src={fileUrl} className="img-responsive" alt={fileName}></img>
+                                )
+                            }
+
+                            {
+                                urlYoutube ? (
+                                    <div class="video-responsive video-responsive-4-3">
+                                        <iframe src={`https://www.youtube.com/embed/${urlYoutube}`} width="560" height="315" frameborder="0" allowfullscreen></iframe>
+                                    </div>
+                                ) : null
+                            }
 
                         </div>
 
@@ -164,17 +178,21 @@ const Apunte = () => {
                             margin: 20px 0;
                         `}>
 
-                            <div className="col-8 col-mx-auto" css={css`
+                            <div className="col-4 col-mx-auto" css={css`
                             margin: 20px auto;
                         `}>
                                 <div className="btn-group btn-group-block">
                                     <button
-                                        className={`btn btn-block ${!user ? "disabled tooltip tooltip-bottom" : ""}`}
+                                        className={`btn btn-primary btn-block ${!user ? "disabled tooltip tooltip-bottom" : ""}`}
                                         data-tooltip="Necesitas registrate para poder votar"
                                         onClick={voteApunte}
                                     >
                                         <i className="icon icon-plus"></i> Votar</button>
-                                    <button className="btn btn-primary btn-block"><i className="icon icon-download"></i> Descargar</button>
+                                    {/* <a
+                                        href={fileUrl}
+                                        className="btn btn-primary btn-block"
+                                        download={fileName}><i className="icon icon-download"
+                                    ></i> Descargar</a> */}
                                 </div>
                             </div>
 

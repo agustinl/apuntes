@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import Header from './Header';
+import Header from './Header'
+import { css, jsx } from '@emotion/core'
 
 const Layout = props => {
     return (
@@ -12,7 +13,10 @@ const Layout = props => {
 
         <Header />
 
-        <div className="container">
+        <div className="container" css={css`
+            max-width:1280px;
+            padding-bottom:50px;
+        `}>
             <div className="columns">
                 {props.children}
             </div>

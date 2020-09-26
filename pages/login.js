@@ -39,7 +39,7 @@ const Login = () => {
     return (
         <>
 			<Layout>
-            <div className="panel column col-4 col-mx-auto">
+            <div className="panel column col-4 col-xl-6 col-md-10 col-mx-auto">
                 <div className="panel-header">
                     <div className="panel-title">
                         <h4>Iniciar Sesion</h4>

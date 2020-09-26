@@ -13,16 +13,16 @@ const Header = () => {
             border-bottom: solid 1px #dadee4;
             margin-bottom:30px;
         `}>
-            <section className="navbar-section">
-                <div className="input-group">
+            <section className="navbar-section col-sm-12">
+                <div className="input-group col-mx-auto">
                     <input type="text" className="form-input" placeholder="Buscar palabras claves" />
                     <button className="btn btn-primary input-group-btn"><i className="icon icon-search"></i></button>
                 </div>
             </section>
-            <section className="navbar-center">
+            <section className="navbar-center col-sm-12">
                 <Link href="/">
                     <a
-                        className="tooltip tooltip-bottom"
+                        className="tooltip tooltip-bottom col-mx-auto"
                         data-tooltip="Volver al Inicio"
                     >
                     <img
@@ -34,6 +34,10 @@ const Header = () => {
                         cursor:pointer;
                         transition:.3s;
 
+                        @media (max-width: 600px) {
+                            margin: 10px 0
+                        }
+
                         &:hover {
                             transform:scale(1.1);
                         }
@@ -41,7 +45,8 @@ const Header = () => {
                     </a>
                 </Link>
             </section>
-            <section className="navbar-section">
+            <section className="navbar-section col-sm-12">
+                <div className="btn-group btn-group-block col-mx-auto">
                 { user ? (
                     <>
                     <Link href="/"
@@ -60,7 +65,7 @@ const Header = () => {
                     <Link href="/login"><a className="btn btn-primary">Iniciar Sesion</a></Link>
                     </>
                 )}
-                
+                </div>                
             </section>
         </header>
     );

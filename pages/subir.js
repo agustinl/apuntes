@@ -28,7 +28,7 @@ const Subir = () => {
     const [error, setError] = useState('');
 
     const {
-		values, 
+        values,
         errors,
         handleSubmit,
 		handleChange,
@@ -47,7 +47,14 @@ const Subir = () => {
 		if(!user) {
 			return router.push('/login');
         }
-        
+
+        // Validate Progress 0 and no YouTube ID
+        if(progress === 0 && urlYoutube.trim() === "") {
+            setError("Es necesario un archivo o link de YouTube");
+            return;
+        }
+
+        setError('');
         setUploadSucess(true);
 
 		const file = {
@@ -107,7 +114,7 @@ const Subir = () => {
     return (
         <>
 			<Layout>
-            <div className="panel column col-4 col-mx-auto">
+            <div className="panel column col-4 col-xl-6 col-md-10 col-mx-auto">
                 <div className="panel-header">
                     <div className="panel-title">
                         <h4>Subir Apunte</h4>
@@ -209,13 +216,16 @@ const Subir = () => {
                             { errors.signature && <p className="form-input-hint">{errors.signature}</p> }
                         </div>
 
-                        <div className="form-group">
+                        <div className={`form-group ${error ? "has-error" : ""}`}>
+
+                            { error && <p className="form-input-hint">{error}</p> }
+
                             <label className="form-label" htmlFor="file">Archivo</label>
                             <FileUploader
-                                accept="image/*"
+                                accept="image/*,application/pdf"
                                 id="file"
                                 name="file"
-                                className="form-group"
+                                className="form-input"
                                 randomizeFilename
                                 storageRef={firebase.storage.ref("apuntes")}
                                 onUploadStart={handleUploadStart}
@@ -233,19 +243,30 @@ const Subir = () => {
                             </div>
                         </div>
 
-                        <div className={`form-group ${errors.urlYoutube ? "has-error" : ""}`}>
+                        <div className={`form-group ${errors.urlYoutube || error ? "has-error" : ""}`}>
                             <label className="form-label" htmlFor="video">Linkear video</label>
-                            <div className="input-group">
+                            <div className="input-group"
+                                css={css`
+                                    @media (max-width: 600px) {
+                                        flex-direction:column;
+                                    }
+                                `}
+                            >
                                 <span className="input-group-addon">www.youtube.com/watch?v=</span>
                                 <input
                                     type="text"
-                                    className="form-input"
+                                    className="form-input col-sm-12"
                                     id="urlYoutube"
                                     name="urlYoutube"
                                     placeholder="2Juo4TshStY"
                                     value={urlYoutube}
                                     maxLength="11"
                                     onChange={handleChange}
+                                    css={css`
+                                        @media (max-width: 600px) {
+                                            width:100%!important;
+                                        }
+                                    `}
                                 />
                             </div>
 
@@ -253,7 +274,7 @@ const Subir = () => {
                         </div>
 
                         <button
-                            className={`btn btn-primary float-right mt-2 ${uploadsucess ? "loading" : ""}`}>
+                            className={`btn btn-primary float-right mt-2 ${uploadsucess || (progress > 0 && progress < 100) ? "loading" : ""}`}>
                                 Subir Apunte</button>
                     </form>
 

@@ -34,7 +34,7 @@ const useValidation = (initialState, validate, fn) => {
     }
 
     // On Blur
-    const handleBlur = () => {
+    const handleBlur = () => {        
         const validateFields = validate(values);
         setErrors(validateFields);
     }

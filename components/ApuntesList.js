@@ -3,7 +3,7 @@ import { css } from '@emotion/core'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import { es } from 'date-fns/locale'
 
-const ListApunte = ({ apunte }) => {
+const ApuntesList = ({ apunte }) => {
 
     const { id, date, fileName, signature, votes } = apunte;
 
@@ -34,4 +34,4 @@ const ListApunte = ({ apunte }) => {
     );
 };
 
-export default ListApunte;
+export default ApuntesList;

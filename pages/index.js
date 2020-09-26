@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Layout from '../components/Layout'
-import ListApunte from '../components/ListApunte'
+import ApuntesList from '../components/ApuntesList'
 import useApuntes from '../hooks/useApuntes'
 
 export default function Home() {
@@ -11,7 +11,7 @@ export default function Home() {
 		<>
 			<Layout>
 				
-				<div className="column col-6 col-mx-auto">
+				<div className="column col-6 col-xl-8 col-md-11 col-mx-auto">
 
 				{ loading ? ( <div className="loading loading-lg"></div> ) :
 					apuntes.length === 0 ? (
@@ -29,7 +29,7 @@ export default function Home() {
 						</div>
 					) : (
 						apuntes.map(apunte => (
-							<ListApunte
+							<ApuntesList
 								key={apunte.id}
 								apunte={apunte}
 							/>
