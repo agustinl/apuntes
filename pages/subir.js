@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { css, jsx } from '@emotion/core';
 import Router, { useRouter } from 'next/router';
@@ -9,9 +9,9 @@ import validationFile from '../validations/validationFile';
 
 const INITIAL_STATE = {
 	fileName: '',
-    urlYoutube: '',
+    fileDescription: '',
     signature: '',
-	fileDescription: ''
+    urlYoutube: ''
 }
 
 import { FirebaseContext } from '../firebase';
@@ -32,23 +32,23 @@ const Subir = () => {
         errors,
         handleSubmit,
 		handleChange,
-		handleBlur
-    } = useValidation(INITIAL_STATE, validationFile, uploadFile);
+        handleBlur
+    } = useValidation(INITIAL_STATE, validationFile, saveInformation);
     
-    const { fileName, urlYoutube, signature, fileDescription } = values;
+    const { fileName, fileDescription, signature, urlYoutube } = values;
 
     // Routing hook
     const router = useRouter();
     
     const { user, firebase } = useContext(FirebaseContext);
     
-    async function uploadFile () {
+    async function saveInformation () {
 		
 		if(!user) {
 			return router.push('/login');
         }
         
-        setUploadSucess(true)
+        setUploadSucess(true);
 
 		const file = {
 			fileName,
@@ -64,7 +64,7 @@ const Subir = () => {
 				username: user.displayName
 			},
 			whoVoted: []
-		}
+        }
 
 		// Insert
         firebase.db.collection('apuntes').add(file);
@@ -74,9 +74,9 @@ const Subir = () => {
             setUploadSucess(false)    
             return router.push('/');
 
-        }, 3000);
+        }, 2000);
 		
-	}
+    }
 
 	const handleUploadStart = () => {
 		setProgress(0);
@@ -149,7 +149,7 @@ const Subir = () => {
                             { errors.fileDescription && <p className="form-input-hint">{errors.fileDescription}</p> }
                         </div>
 
-                        {<div className={`form-group ${errors.signature ? "has-error" : ""}`}>
+                        <div className={`form-group ${errors.signature ? "has-error" : ""}`}>
                             <label className="form-label" htmlFor="signature">Materia</label>
                             <select
                                 className="form-select"
@@ -157,7 +157,8 @@ const Subir = () => {
                                 name="signature"
                                 value={signature}
                                 onChange={handleChange}
-                            >
+                            >   
+                                <option value="">Seleccionar Materia</option>
                                 <option value="Anatomía">Anatomía</option>
                                 <option value="Histología, Biología Celular, Embriología y Genética">Histología, Biología Celular, Embriología y Genética</option>
                                 <option value="Medicina Familiar I">Medicina Familiar I</option>
@@ -206,7 +207,7 @@ const Subir = () => {
                             </select>
 
                             { errors.signature && <p className="form-input-hint">{errors.signature}</p> }
-                        </div>}
+                        </div>
 
                         <div className="form-group">
                             <label className="form-label" htmlFor="file">Archivo</label>
@@ -214,7 +215,7 @@ const Subir = () => {
                                 accept="image/*"
                                 id="file"
                                 name="file"
-                                className="form-input"
+                                className="form-group"
                                 randomizeFilename
                                 storageRef={firebase.storage.ref("apuntes")}
                                 onUploadStart={handleUploadStart}
@@ -232,12 +233,23 @@ const Subir = () => {
                             </div>
                         </div>
 
-                        <div className="form-group">
+                        <div className={`form-group ${errors.urlYoutube ? "has-error" : ""}`}>
                             <label className="form-label" htmlFor="video">Linkear video</label>
                             <div className="input-group">
                                 <span className="input-group-addon">www.youtube.com/watch?v=</span>
-                                <input type="text" className="form-input" id="video" placeholder="2Juo4TshStY" />
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    id="urlYoutube"
+                                    name="urlYoutube"
+                                    placeholder="2Juo4TshStY"
+                                    value={urlYoutube}
+                                    maxLength="11"
+                                    onChange={handleChange}
+                                />
                             </div>
+
+                            { errors.urlYoutube && <p className="form-input-hint">{errors.urlYoutube}</p> }
                         </div>
 
                         <button

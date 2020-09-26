@@ -4,6 +4,7 @@ import { FirebaseContext } from '../firebase';
 const useApuntes = order => {
 
     const [ apuntes, setApunte ] = useState([]);
+    const [ loading, setLoading ] = useState(true);
 
     const { firebase } = useContext(FirebaseContext);
 
@@ -23,10 +24,12 @@ const useApuntes = order => {
         });
 
         setApunte(apuntes);
+        setLoading(false);
     }
 
     return {
-        apuntes
+        apuntes,
+        loading
     }
 }
 

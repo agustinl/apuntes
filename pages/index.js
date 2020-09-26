@@ -5,7 +5,7 @@ import useApuntes from '../hooks/useApuntes'
 
 export default function Home() {
 
-	const { apuntes } = useApuntes('date');
+	const { apuntes, loading } = useApuntes('date');
 
 	return (
 		<>
@@ -13,7 +13,7 @@ export default function Home() {
 				
 				<div className="column col-6 col-mx-auto">
 
-				{
+				{ loading ? ( <div className="loading loading-lg"></div> ) :
 					apuntes.length === 0 ? (
 						<div className="empty">
 							<div className="empty-icon">

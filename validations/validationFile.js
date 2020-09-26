@@ -4,24 +4,22 @@ export default function validationFile(values) {
 
     // Validate Email mandatory
     if(!values.fileName) {
-        errors.fileName = "El nombre del apunte es obligatorio";
+        errors.fileName = "No olvides el nombre del apunte";
     }
 
     // Validate Email mandatory
     if(!values.signature) {
-        errors.signature = "La materia es obligatoria"
+        errors.signature = "No olvides seleccionar una materia"
     }
     
-    // validar la url
-    /* if(!values.url) {
-        errors.url = 'La URL del producto es obligatoria';
-    } else if( !/^(ftp|http|https):\/\/[^ "]+$/.test(values.url) ) {
-        errors.url = "URL mal formateada o no válida"
-    } */
+    // Validate URL
+    if(values.urlYoutube && !/[a-zA-Z0-9_-]{11}/.test(values.urlYoutube)) {
+        errors.urlYoutube = "Video ID no valido"
+    }
 
     // validar descripción.
     if(!values.fileDescription) {
-        errors.fileDescription = "La descripción del apunte es obligatoria"
+        errors.fileDescription = "No olvides poner una descripción"
     }
 
 

@@ -16,7 +16,8 @@ const Apunte = () => {
     const [ apunte, setApunte ] = useState({});
     const [ error, setError ] = useState(false);
     const [ comment, setComment ] = useState({});
-    const [ consult, setConsult ] = useState(true);
+    const [ query, setQuery ] = useState(true);
+    const [ commentError, setCommentError ] = useState('');
 
     const router = useRouter();
     const { query: { id }} = router;
@@ -24,21 +25,21 @@ const Apunte = () => {
     const { firebase, user } = useContext(FirebaseContext);
 
     useEffect(() => {
-        if(id && consult) {
+        if(id && query) {
             const obtenerProducto = async () => {
                 const apunteQuery = await firebase.db.collection('apuntes').doc(id);
                 const apunte = await apunteQuery.get();
                 if(apunte.exists) {
                    setApunte( apunte.data() );
-                   setConsult(false);
+                   setQuery(false);
                 } else {
                     setError( true );
-                    setConsult(false);
+                    setQuery(false);
                 }
             }
             obtenerProducto();
         }
-    }, [id, consult]);
+    }, [id, query]);
     
     if(Object.keys(apunte).length === 0 && !error) return 'Cargando...';
 
@@ -69,8 +70,8 @@ const Apunte = () => {
             votes: newVote
         })
 
-        // there is a vote, therefore consult the BD
-        setConsult(true);
+        // there is a vote, therefore query the BD
+        setQuery(true);
     }
 
     const handleCommentChange = e => {
@@ -87,6 +88,13 @@ const Apunte = () => {
             return router.push('/login')
         }
 
+        if (Object.keys(comment).length === 0 || comment.comment.trim() === "") {
+            setCommentError("El comentario no puede estar vacio")
+            return;
+        }
+
+        setCommentError("");
+
         // Add extra info to comment
         comment.userId = user.uid;
         comment.userName = user.displayName;
@@ -102,7 +110,8 @@ const Apunte = () => {
             comments: newComment
         })
 
-        setConsult(true);
+        setComment({});
+        setQuery(true);
     }
 
     // función que revisa que el creador del producto sea el mismo que esta autenticado
@@ -200,7 +209,7 @@ const Apunte = () => {
                                 ) : (
                                     comments.map((comment, i) => (
                                         <Comment
-                                            key={`${comment.usuarioId}-${i}`}
+                                            key={`${comment.userId}-${i}`}
                                             commentData={comment}
                                             authorId={author.id}
                                         />
@@ -216,7 +225,7 @@ const Apunte = () => {
                                     <form
                                         onSubmit={addComment}
                                     >
-                                        <div className="form-group">
+                                        <div className={`form-group ${commentError ? "has-error" : ""}`}>
                                             <label className="form-label" htmlFor="comment">Deja tu comentario:</label>
                                             <textarea
                                                 className="form-input"
@@ -227,6 +236,8 @@ const Apunte = () => {
                                                 onChange={handleCommentChange}
                                             >
                                             </textarea>
+
+                                            { commentError && <p className="form-input-hint">{commentError}</p> }
                                         </div>
 
                                         <button className="btn btn-primary float-right mt-2">Enviar</button>
