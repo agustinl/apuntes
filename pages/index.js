@@ -15,15 +15,15 @@ export default function Home() {
 
 				{
 					apuntes.length === 0 ? (
-						<div class="empty">
-							<div class="empty-icon">
-								<i class="icon icon-minus"></i>
+						<div className="empty">
+							<div className="empty-icon">
+								<i className="icon icon-minus"></i>
 							</div>
-							<p class="empty-title h5">Sé el primero</p>
-							<p class="empty-subtitle">Todavia no hay ningun apunte subido</p>
-							<div class="empty-action">
+							<p className="empty-title h5">Sé el primero</p>
+							<p className="empty-subtitle">Todavia no hay ningun apunte subido</p>
+							<div className="empty-action">
 								<Link href="/subir">
-									<a class="btn btn-primary">Subir</a>
+									<a className="btn btn-primary">Subir</a>
 								</Link>
 							</div>
 						</div>

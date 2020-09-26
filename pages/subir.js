@@ -72,7 +72,7 @@ const Subir = () => {
         setTimeout(function(){
 
             setUploadSucess(false)    
-            /* return router.push('/'); */
+            return router.push('/');
 
         }, 3000);
 		
@@ -158,10 +158,51 @@ const Subir = () => {
                                 value={signature}
                                 onChange={handleChange}
                             >
-                                <option value="">Choose an option</option>
-                                <option value="1">Slack</option>
-                                <option value="2">Skype</option>
-                                <option value="3">Hipchat</option>
+                                <option value="Anatomía">Anatomía</option>
+                                <option value="Histología, Biología Celular, Embriología y Genética">Histología, Biología Celular, Embriología y Genética</option>
+                                <option value="Medicina Familiar I">Medicina Familiar I</option>
+                                <option value="Química Biológica">Química Biológica</option>
+                                <option value="Fisiología y Biofísica">Fisiología y Biofísica</option>
+                                <option value="Inmunología Humana">Inmunología Humana</option>
+                                <option value="Microbiología y Parasitología I">Microbiología y Parasitología I</option>
+                                <option value="Microbiología y Parasitología I General">Microbiología y Parasitología I General</option>
+                                <option value="Microbiología y Parasitología II">Microbiología y Parasitología II</option>
+                                <option value="Microbiología y Parasitología II Médica">Microbiología y Parasitología II Médica</option>
+                                <option value="Salud Mental">Salud Mental</option>
+                                <option value="Patología I">Patología I</option>
+                                <option value="Farmacología I">Farmacología I</option>
+                                <option value="Bioética I">Bioética I</option>
+                                <option value="Medicina I (Semiología y Fisiopatología)">Medicina I (Semiología y Fisiopatología)</option>
+                                <option value="Medicina II (Medicina Interna)">Medicina II (Medicina Interna)</option>
+                                <option value="Nutrición">Nutrición</option>
+                                <option value="Diagnóstico por Imágenes">Diagnóstico por Imágenes</option>
+                                <option value="Dermatología">Dermatología</option>
+                                <option value="Infectología">Infectología</option>
+                                <option value="Neumonología">Neumonología</option>
+                                <option value="Neurología">Neurología</option>
+                                <option value="Cirugía General">Cirugía General</option>
+                                <option value="Urología">Urología</option>
+                                <option value="Ortopedia y Traumatología">Ortopedia y Traumatología</option>
+                                <option value="Oftalmología">Oftalmología</option>
+                                <option value="Otorrinolaringología">Otorrinolaringología</option>
+                                <option value="Neurocirugía">Neurocirugía</option>
+                                <option value="Obstetricia">Obstetricia</option>
+                                <option value="Ginecología">Ginecología</option>
+                                <option value="Patología II">Patología II</option>
+                                <option value="Farmacología II">Farmacología II</option>
+                                <option value="Salud Pública I">Salud Pública I</option>
+                                <option value="Salud Pública II">Salud Pública II</option>
+                                <option value="Psiquiatría">Psiquiatría</option>
+                                <option value="Medicina Legal y Deontología Médica">Medicina Legal y Deontología Médica</option>
+                                <option value="Toxicología">Toxicología</option>
+                                <option value="Bioética II">Bioética II</option>
+                                <option value="Clínica Médica">Clínica Médica</option>
+                                <option value="Cirugía">Cirugía</option>
+                                <option value="Tocoginecología">Tocoginecología</option>
+                                <option value="Pediatría">Pediatría</option>
+                                <option value="Medicina Familiar II">Medicina Familiar II</option>
+                                <option value="Emergentología (Terapia y Urgencias Hospitalarias)">Emergentología (Terapia y Urgencias Hospitalarias)</option>
+
                             </select>
 
                             { errors.signature && <p className="form-input-hint">{errors.signature}</p> }

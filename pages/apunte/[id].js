@@ -10,13 +10,13 @@ import Comment from '../../components/Comment';
 
 import { css } from '@emotion/core';
 
-const Apunte = () => { 
+const Apunte = () => {
     
     // Apunte State
     const [ apunte, setApunte ] = useState({});
     const [ error, setError ] = useState(false);
     const [ comment, setComment ] = useState({});
-    const [ consultarDB, guardarConsultarDB ] = useState(true);
+    const [ consult, setConsult ] = useState(true);
 
     const router = useRouter();
     const { query: { id }} = router;
@@ -24,97 +24,85 @@ const Apunte = () => {
     const { firebase, user } = useContext(FirebaseContext);
 
     useEffect(() => {
-        if(id && consultarDB) {
+        if(id && consult) {
             const obtenerProducto = async () => {
                 const apunteQuery = await firebase.db.collection('apuntes').doc(id);
                 const apunte = await apunteQuery.get();
                 if(apunte.exists) {
                    setApunte( apunte.data() );
-                   guardarConsultarDB(false);
+                   setConsult(false);
                 } else {
                     setError( true );
-                    guardarConsultarDB(false);
+                    setConsult(false);
                 }
             }
             obtenerProducto();
         }
-    }, [id]);
+    }, [id, consult]);
     
-    if(Object.keys(apunte).length === 0 && !error)  return 'Cargando...';
+    if(Object.keys(apunte).length === 0 && !error) return 'Cargando...';
 
     const { author, comments, date, fileDescription, fileName, fileUrl, signature, votes, whoVoted } = apunte;
 
-     // Administrar y validar los votos
-     const votarProducto = () => {
-        if(!usuario) {
+    const voteApunte = () => {
+        if(!user) {
             return router.push('/login')
         }
 
-        // obtener y sumar un nuevo voto
-        const nuevoTotal = votos + 1;
+        // Get vote and add one
+        const newVote = votes + 1;
 
-        // Verificar si el usuario actual ha votado
-        if(haVotado.includes(usuario.uid) ) return;
+        // Check if the user voted before
+        if(whoVoted.includes(user.uid) ) return;
 
-        // guardar el ID del usuario que ha votado
-        const nuevoHaVotado = [...haVotado, usuario.uid];
+        // Save now user ID vote
+        const newUserVote = [...whoVoted, user.uid];
 
-        //  Actualizar en la BD
-        firebase.db.collection('productos').doc(id).update({ 
-            votos: nuevoTotal, 
-            haVotado: nuevoHaVotado 
+        // Set vote
+        firebase.db.collection('apuntes').doc(id).update({ 
+            votes: newVote, 
+            whoVoted: newUserVote 
         })
 
-        // Actualizar el state
         setApunte({
             ...apunte,
-            votos: nuevoTotal
+            votes: newVote
         })
 
-        guardarConsultarDB(true); // hay un voto, por lo tanto consultar a la BD
+        // there is a vote, therefore consult the BD
+        setConsult(true);
     }
 
-    // Funciones para crear comentarios
-    const comentarioChange = e => {
+    const handleCommentChange = e => {
         setComment({
             ...comment,
             [e.target.name] : e.target.value
         })
-    }
+    }    
 
-    // Identifica si el comentario es del creador del producto
-    const esCreador = id => {
-        if(creador.id == id) {
-            return true;
-        }
-    }
-
-    const agregarComentario = e => {
+    const addComment = e => {
         e.preventDefault();
 
-        if(!usuario) {
+        if(!user) {
             return router.push('/login')
         }
 
-        // información extra al comentario
-        comentario.usuarioId = usuario.uid;
-        comentario.usuarioNombre = usuario.displayName;
+        // Add extra info to comment
+        comment.userId = user.uid;
+        comment.userName = user.displayName;
 
-        // Tomar copia de comentarios y agregarlos al arreglo
-        const nuevosComentarios = [...comentarios, comentario];
+        const newComment = [...comments, comment];
 
-        // Actualizar la BD
-        firebase.db.collection('productos').doc(id).update({
-            comentarios: nuevosComentarios
+        firebase.db.collection('apuntes').doc(id).update({
+            comments: newComment
         })
 
-        // Actualizar el state
         setApunte({
             ...apunte,
-            comentarios: nuevosComentarios
+            comments: newComment
         })
 
-        guardarConsultarDB(true); // hay un COMENTARIO, por lo tanto consultar a la BD
+        setConsult(true);
     }
 
     // función que revisa que el creador del producto sea el mismo que esta autenticado
@@ -171,14 +159,19 @@ const Apunte = () => {
                             margin: 20px auto;
                         `}>
                                 <div className="btn-group btn-group-block">
-                                    <button className="btn btn-block"><i className="icon icon-plus"></i> Votar</button>
+                                    <button
+                                        className={`btn btn-block ${!user ? "disabled tooltip tooltip-bottom" : ""}`}
+                                        data-tooltip="Necesitas registrate para poder votar"
+                                        onClick={voteApunte}
+                                    >
+                                        <i className="icon icon-plus"></i> Votar</button>
                                     <button className="btn btn-primary btn-block"><i className="icon icon-download"></i> Descargar</button>
                                 </div>
                             </div>
 
                             <div className="chip">
-                                <img src={`https://api.adorable.io/avatars/45/${user.displayName}.png`} className="avatar avatar-sm" />
-                                Por: {user.displayName}
+                                <img src={`https://api.adorable.io/avatars/45/${author.username}.png`} className="avatar avatar-sm" />
+                                Por: {author.username}
                             </div>
                             
                             <span className="chip mb-1">{votes === 1 ? votes + " Punto" : votes + " Puntos"}</span>
@@ -197,29 +190,53 @@ const Apunte = () => {
 
                             {
                                 comments.length === 0 ? (
-                                    <div class="empty">
-                                        <div class="empty-icon">
-                                            <i class="icon icon-message icon-3x"></i>
+                                    <div className="empty">
+                                        <div className="empty-icon">
+                                            <i className="icon icon-message icon-3x"></i>
                                         </div>
-                                        <p class="empty-title h5">Sé el primero</p>
-                                        <p class="empty-subtitle">Todavia no hay ningun comentario</p>
+                                        <p className="empty-title h5">Sé el primero</p>
+                                        <p className="empty-subtitle">Todavia no hay ningun comentario</p>
                                     </div>
                                 ) : (
-                                    <Comment />
+                                    comments.map((comment, i) => (
+                                        <Comment
+                                            key={`${comment.usuarioId}-${i}`}
+                                            commentData={comment}
+                                            authorId={author.id}
+                                        />
+                                    ))
                                 )
                             }
                         </div>
 
                         <div className="column col-12">
 
-                            <form>
-                                <div className="form-group">
-                                    <label className="form-label" htmlFor="comment">Deja tu comentario:</label>
-                                    <textarea className="form-input" id="comment" placeholder="Comentario" rows="3"></textarea>
-                                </div>
+                            {
+                                user ? (
+                                    <form
+                                        onSubmit={addComment}
+                                    >
+                                        <div className="form-group">
+                                            <label className="form-label" htmlFor="comment">Deja tu comentario:</label>
+                                            <textarea
+                                                className="form-input"
+                                                id="comment"
+                                                placeholder="Comentario"
+                                                rows="3"
+                                                name="comment"
+                                                onChange={handleCommentChange}
+                                            >
+                                            </textarea>
+                                        </div>
 
-                                <button className="btn btn-primary float-right mt-2">Enviar</button>
-                            </form>
+                                        <button className="btn btn-primary float-right mt-2">Enviar</button>
+                                    </form>
+                                ) : (
+                                    <div class="toast toast-primary">
+                                        Necesitas registrarte para poder comentar
+                                    </div>
+                                )
+                            }
 
                         </div>
 

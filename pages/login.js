@@ -42,7 +42,7 @@ const Login = () => {
             <div className="panel column col-4 col-mx-auto">
                 <div className="panel-header">
                     <div className="panel-title">
-                        <h4>Registrarse</h4>
+                        <h4>Iniciar Sesion</h4>
                     </div>
                 </div>
 
