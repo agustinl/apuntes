@@ -1,7 +1,12 @@
 import Link from 'next/link'
-import { css, jsx } from '@emotion/core'
+import { css } from '@emotion/core'
+import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import { es } from 'date-fns/locale'
 
-const Apunte = () => {
+const ListApunte = ({ apunte }) => {
+
+    const { id, date, fileName, signature, votes } = apunte;
+
     return (
         <div className="card" css={css`
             margin-bottom:20px;
@@ -11,23 +16,22 @@ const Apunte = () => {
             </div>
             <div className="card-header">
                 <div className="card-title h5">
-                    <Link href="/apunte/[id]" as={`/apunte/1`}>
-                        <a>Titulo de apunte</a>
+                    <Link href="/apunte/[id]" as={`/apunte/${id}`}>
+                        <a>{fileName}</a>
                     </Link>
                 </div>
                 <div className="card-subtitle text-gray">
-                    Hardware and software
+                    {signature}
                 </div>
             </div>
             <div className="card-footer">
-                <span className="chip mb-1">50 Puntos</span>
+                <span className="chip mb-1">{votes === 1 ? votes + " Punto" : votes + " Puntos"}</span>
                 <p className="text-italic text-tiny float-right mb-1">
-                    <i className="mb-1 icon icon-time"></i> Publicado hace: 20
-                    minutos
+                    <i className="mb-1 icon icon-time"></i> Publicado hace { formatDistanceToNow( new Date(date), {locale: es} )}
                 </p>
             </div>
         </div>
     );
 };
 
-export default Apunte;
+export default ListApunte;

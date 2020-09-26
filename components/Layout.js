@@ -12,8 +12,8 @@ const Layout = props => {
 
         <Header />
 
-        <div class="container">
-            <div class="columns">
+        <div className="container">
+            <div className="columns">
                 {props.children}
             </div>
         </div>

@@ -1,6 +1,42 @@
+import { useState } from 'react';
 import Layout from '../components/Layout';
+import Router from 'next/router';
+
+// Validations
+import useValidation from '../hooks/useValidation';
+import validationRegister from '../validations/validationRegister';
+
+const INITIAL_STATE = {
+	username: '',
+	email: '',
+	password: ''
+}
+
+import firebase from '../firebase';
 
 const Registrarse = () => {
+
+    const [error, setError] = useState('');
+
+	const {
+		values, 
+        errors,
+        handleSubmit,
+		handleChange,
+		handleBlur
+	} = useValidation(INITIAL_STATE, validationRegister, createAccount);
+
+	const { username, email, password } = values;
+
+	async function createAccount () {
+		try {
+			await firebase.register(username, email, password);
+			Router.push('/');
+		} catch (error) {
+			setError(error.message);
+		}
+	}
+
     return (
         <>
 			<Layout>
@@ -13,20 +49,52 @@ const Registrarse = () => {
 
                 <div className="panel-body">
 
-                    <form>
-                        <div className="form-group">
+                    <form
+					    onSubmit={handleSubmit}
+                    >
+                        <div className={`form-group ${errors.username ? "has-error" : ""}`}>
                             <label className="form-label" htmlFor="username">Usuario</label>
-                            <input className="form-input" type="text" id="username" placeholder="Usuario" />
+                            <input
+                                className="form-input"
+                                type="text"
+                                id="username"
+                                placeholder="Usuario"
+                                name="username"
+                                value={username}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                            />
+                            { errors.username && <p className="form-input-hint">{errors.username}</p> }
                         </div>
 
-                        <div className="form-group">
+                        <div className={`form-group ${errors.email ? "has-error" : ""}`}>
                             <label className="form-label" htmlFor="email">Email</label>
-                            <input className="form-input" type="email" id="email" placeholder="Email" />
+                            <input
+                                className="form-input"
+                                type="email"
+                                id="email"
+                                placeholder="Email"
+                                name="email"
+                                value={email}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                            />
+                            { errors.email && <p className="form-input-hint">{errors.email}</p> }
                         </div>
 
-                        <div className="form-group">
+                        <div className={`form-group ${errors.password ? "has-error" : ""}`}>
                             <label className="form-label" htmlFor="password">Password</label>
-                            <input className="form-input" type="password" id="password" placeholder="Password" />
+                            <input 
+                                className="form-input"
+                                type="password"
+                                id="password"
+                                placeholder="Password"
+                                name="password"
+                                value={password}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                            />
+                            { errors.password && <p className="form-input-hint">{errors.password}</p> }
                         </div>
 
                         <button className="btn btn-primary float-right mt-2">Registrarse</button>

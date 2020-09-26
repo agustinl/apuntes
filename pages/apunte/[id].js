@@ -1,9 +1,150 @@
+import { useEffect, useContext, useState } from 'react';
+import { useRouter } from 'next/router';
+import { FirebaseContext } from '../../firebase';
+
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { es } from 'date-fns/locale';
+
 import Layout from '../../components/Layout';
-import Comment from '../../components/Comment'
+import Comment from '../../components/Comment';
 
-import { css, jsx } from '@emotion/core'
+import { css } from '@emotion/core';
 
-const Apunte = () => {
+const Apunte = () => { 
+    
+    // Apunte State
+    const [ apunte, setApunte ] = useState({});
+    const [ error, setError ] = useState(false);
+    const [ comment, setComment ] = useState({});
+    const [ consultarDB, guardarConsultarDB ] = useState(true);
+
+    const router = useRouter();
+    const { query: { id }} = router;
+
+    const { firebase, user } = useContext(FirebaseContext);
+
+    useEffect(() => {
+        if(id && consultarDB) {
+            const obtenerProducto = async () => {
+                const apunteQuery = await firebase.db.collection('apuntes').doc(id);
+                const apunte = await apunteQuery.get();
+                if(apunte.exists) {
+                   setApunte( apunte.data() );
+                   guardarConsultarDB(false);
+                } else {
+                    setError( true );
+                    guardarConsultarDB(false);
+                }
+            }
+            obtenerProducto();
+        }
+    }, [id]);
+    
+    if(Object.keys(apunte).length === 0 && !error)  return 'Cargando...';
+
+    const { author, comments, date, fileDescription, fileName, fileUrl, signature, votes, whoVoted } = apunte;
+
+     // Administrar y validar los votos
+     const votarProducto = () => {
+        if(!usuario) {
+            return router.push('/login')
+        }
+
+        // obtener y sumar un nuevo voto
+        const nuevoTotal = votos + 1;
+
+        // Verificar si el usuario actual ha votado
+        if(haVotado.includes(usuario.uid) ) return;
+
+        // guardar el ID del usuario que ha votado
+        const nuevoHaVotado = [...haVotado, usuario.uid];
+
+        //  Actualizar en la BD
+        firebase.db.collection('productos').doc(id).update({ 
+            votos: nuevoTotal, 
+            haVotado: nuevoHaVotado 
+        })
+
+        // Actualizar el state
+        setApunte({
+            ...apunte,
+            votos: nuevoTotal
+        })
+
+        guardarConsultarDB(true); // hay un voto, por lo tanto consultar a la BD
+    }
+
+    // Funciones para crear comentarios
+    const comentarioChange = e => {
+        setComment({
+            ...comment,
+            [e.target.name] : e.target.value
+        })
+    }
+
+    // Identifica si el comentario es del creador del producto
+    const esCreador = id => {
+        if(creador.id == id) {
+            return true;
+        }
+    }
+
+    const agregarComentario = e => {
+        e.preventDefault();
+
+        if(!usuario) {
+            return router.push('/login')
+        }
+
+        // información extra al comentario
+        comentario.usuarioId = usuario.uid;
+        comentario.usuarioNombre = usuario.displayName;
+
+        // Tomar copia de comentarios y agregarlos al arreglo
+        const nuevosComentarios = [...comentarios, comentario];
+
+        // Actualizar la BD
+        firebase.db.collection('productos').doc(id).update({
+            comentarios: nuevosComentarios
+        })
+
+        // Actualizar el state
+        setApunte({
+            ...apunte,
+            comentarios: nuevosComentarios
+        })
+
+        guardarConsultarDB(true); // hay un COMENTARIO, por lo tanto consultar a la BD
+    }
+
+    // función que revisa que el creador del producto sea el mismo que esta autenticado
+    const puedeBorrar = () => {
+        if(!usuario) return false;
+
+        if(creador.id === usuario.uid) {
+            return true
+        }
+    }
+
+    // elimina un producto de la bd
+    const eliminarProducto = async () => {
+
+        if(!usuario) {
+            return router.push('/login')
+        }
+
+        if(creador.id !== usuario.uid) {
+            return router.push('/')
+        }
+
+        try {
+            await firebase.db.collection('productos').doc(id).delete();
+            router.push('/')
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <>
             <Layout>
@@ -12,13 +153,13 @@ const Apunte = () => {
                     <div className="columns">
 
                         <div className="column col-12">
-                            <h2>Nombre del Apunte</h2>
-                            <p className="text-gray">Nombre de la materia</p>
+                            <h2>{fileName}</h2>
+                            <p className="text-gray">{signature}</p>
                         </div>
 
                         <div className="column col-8 col-mx-auto">
 
-                            <img src="https://via.placeholder.com/900x1200" className="img-responsive ..." alt="..."></img>
+                            <img src={fileUrl} className="img-responsive" alt={fileName}></img>
 
                         </div>
 
@@ -36,17 +177,17 @@ const Apunte = () => {
                             </div>
 
                             <div className="chip">
-                                <img src="https://api.adorable.io/avatars/45/abott@adorable.png" className="avatar avatar-sm" />
-                                Por: Yan Zhu
+                                <img src={`https://api.adorable.io/avatars/45/${user.displayName}.png`} className="avatar avatar-sm" />
+                                Por: {user.displayName}
                             </div>
                             
-                            <span className="chip mb-1">50 Puntos</span>
+                            <span className="chip mb-1">{votes === 1 ? votes + " Punto" : votes + " Puntos"}</span>
 
                             <p className="text-small mt-2">
-                                Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi.
+                                {fileDescription}
                             </p>
 
-                            <p className="text-italic text-tiny mt-1"><i className="mb-1 icon icon-time"></i> Publicado hace: 20 minutos</p>                            
+                            <p className="text-italic text-tiny mt-1"><i className="mb-1 icon icon-time"></i> Publicado hace { formatDistanceToNow( new Date(date), {locale: es} )}</p>                            
 
                         </div>
 
@@ -54,11 +195,19 @@ const Apunte = () => {
 
                             <h4>Comentarios</h4>
 
-                            <Comment />
-
-                            <Comment />
-
-                            <Comment />
+                            {
+                                comments.length === 0 ? (
+                                    <div class="empty">
+                                        <div class="empty-icon">
+                                            <i class="icon icon-message icon-3x"></i>
+                                        </div>
+                                        <p class="empty-title h5">Sé el primero</p>
+                                        <p class="empty-subtitle">Todavia no hay ningun comentario</p>
+                                    </div>
+                                ) : (
+                                    <Comment />
+                                )
+                            }
                         </div>
 
                         <div className="column col-12">
