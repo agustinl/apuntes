@@ -113,35 +113,7 @@ const Apunte = () => {
         setComment({});
         setQuery(true);
     }
-
-    // función que revisa que el creador del producto sea el mismo que esta autenticado
-    const puedeBorrar = () => {
-        if(!usuario) return false;
-
-        if(creador.id === usuario.uid) {
-            return true
-        }
-    }
-
-    // elimina un producto de la bd
-    const eliminarProducto = async () => {
-
-        if(!usuario) {
-            return router.push('/login')
-        }
-
-        if(creador.id !== usuario.uid) {
-            return router.push('/')
-        }
-
-        try {
-            await firebase.db.collection('productos').doc(id).delete();
-            router.push('/')
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
+    
     return (
         <>
             <Layout>
@@ -236,7 +208,7 @@ const Apunte = () => {
                             }
                         </div>
 
-                        <div className="column col-12">
+                        <div className="column col-12 mt-2">
 
                             {
                                 user ? (

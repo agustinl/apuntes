@@ -1,11 +1,25 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import Link from 'next/link';
 import { css, jsx } from '@emotion/core';
 import { FirebaseContext } from '../firebase';
+import Router from 'next/router';
 
 const Header = () => {
 
+    const [ search, setSearch] = useState('');
+
     const { user, firebase } = useContext(FirebaseContext);
+
+    const searchApunte = e => {
+        e.preventDefault();
+
+        if(search.trim() === '') return;
+
+        Router.push({
+            pathname: '/buscar', 
+            query: { q : search }
+        })
+    }
 
     return (
         <header className="navbar" css={css`
@@ -14,10 +28,18 @@ const Header = () => {
             margin-bottom:30px;
         `}>
             <section className="navbar-section col-sm-12">
-                <div className="input-group col-mx-auto">
-                    <input type="text" className="form-input" placeholder="Buscar palabras claves" />
-                    <button className="btn btn-primary input-group-btn"><i className="icon icon-search"></i></button>
-                </div>
+                <form
+                    className="input-group col-mx-auto"
+                    onSubmit={searchApunte}
+                >
+                    <input                    
+                        type="text"
+                        className="form-input"
+                        placeholder="Buscar palabras claves"
+                        onChange={e =>  setSearch(e.target.value) }
+                        />
+                    <button className="btn btn-primary input-group-btn" type="submit"><i className="icon icon-search"></i></button>
+                </form>
             </section>
             <section className="navbar-center col-sm-12">
                 <Link href="/">

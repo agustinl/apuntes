@@ -32,7 +32,16 @@ const Login = () => {
 			await firebase.login(email, password);
 			Router.push('/');
 		} catch (error) {
-			setError(error.message);
+            switch (error.code) {
+                case "auth/user-not-found":
+                    setError("Usuario no registrado");
+                    break;
+                case "auth/wrong-password":
+                    setError("Password incorrecta");
+                    break;   
+                default:
+                    break;
+            }
 		}
 	}
 
@@ -78,6 +87,8 @@ const Login = () => {
                             />
                             { errors.password && <p className="form-input-hint">{errors.password}</p> }
                         </div>
+
+                        { error != "" && <div className="form-group has-error"><p className="form-input-hint">{error}</p></div>}
 
                         <button className="btn btn-primary float-right mt-2">Iniciar Sesion</button>
                     </form>

@@ -33,7 +33,13 @@ const Registrarse = () => {
 			await firebase.register(username, email, password);
 			Router.push('/');
 		} catch (error) {
-			setError(error.message);
+            switch (error.code) {
+                case "auth/email-already-in-use":
+                    setError("Email ya registrado");
+                    break;  
+                default:
+                    break;
+            }
 		}
 	}
 
@@ -96,6 +102,8 @@ const Registrarse = () => {
                             />
                             { errors.password && <p className="form-input-hint">{errors.password}</p> }
                         </div>
+
+                        { error != "" && <div className="form-group has-error"><p className="form-input-hint">{error}</p></div>}
 
                         <button className="btn btn-primary float-right mt-2">Registrarse</button>
                     </form>
