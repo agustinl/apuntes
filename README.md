@@ -1,7 +1,5 @@
 ## Apuntes
 
-[Netlify Status](https://api.netlify.com/api/v1/badges/194c5ed4-f192-4d6e-9e6c-fdb43e1862d4/deploy-status)
-
 MVP to use React with Firebase and Next.js for SSR
 
 ### Stack
