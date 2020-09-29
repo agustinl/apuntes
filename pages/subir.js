@@ -48,8 +48,8 @@ const Subir = () => {
 			return router.push('/login');
         }
 
-        // Validate Progress 0 and no YouTube ID
-        if(progress === 0 && urlYoutube.trim() === "") {
+        // Validate fileUrl and no YouTube ID
+        if(fileUrl == "" && urlYoutube.trim() === "") {
             setError("Es necesario un archivo o link de YouTube");
             return;
         }
